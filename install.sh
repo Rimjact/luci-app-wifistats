@@ -60,8 +60,6 @@ download_file() {
 download_project_files() {
     echo "--- ⚙️ Скачиваем файлы проекта ---"
 
-    local downloaded=1
-
     download_file "root/etc/init.d/wifistats" "/etc/init.d/wifistats"
     download_file "root/usr/bin/wifistats" "/usr/bin/wifistats"
     download_file "root/usr/lib/lua/luci/controller/wifistats.lua" "/usr/lib/lua/luci/contorller/wifistats.lua"
