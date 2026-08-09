@@ -36,6 +36,8 @@ uninstall_project() {
     echo "Мониторинг более недоступен."
     echo "Удалите зависимости вручную, если они не используются."
     echo "Файл состояния за текущий день остался по пути /etc/wifistats/state.json"
+
+    rmf /tmp/wifistats-uninstall.sh
 }
 
 uninstall_project

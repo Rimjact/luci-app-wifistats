@@ -77,6 +77,8 @@ install_project() {
 
     echo "=== 🎉 Wi-Fi Stats установлен ==="
     echo "Мониторинг доступен Статус -> Статистика Wi-Fi"
+
+    rmf /tmp/wifistats-install.sh
 }
 
 install_project
