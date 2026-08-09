@@ -1,7 +1,7 @@
 #!/bin/sh
 
-REPOSITORY=""
-BRANCH=""
+REPOSITORY="https://raw.githubusercontent.com/Rimjact/luci-app-wifistats"
+BRANCH="main"
 
 install_depends() {
     echo "--- 🔃 Устанавливаем зависимости ---"
