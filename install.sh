@@ -62,9 +62,7 @@ download_project_files() {
 
     local downloaded=1
 
-    if download_file "root/etc/init.d/wifistats" "/etc/init.d/wifistats"; then
-
-    fi
+    download_file "root/etc/init.d/wifistats" "/etc/init.d/wifistats"
     download_file "root/usr/bin/wifistats" "/usr/bin/wifistats"
     download_file "root/usr/lib/lua/luci/controller/wifistats.lua" "/usr/lib/lua/luci/contorller/wifistats.lua"
     download_file "root/usr/lib/lua/luci/view/wifistats.htm" "/usr/lib/lua/luci/view/wifistats.htm"
