@@ -11,6 +11,10 @@ cleanup_services() {
     echo "--- ✅ Приготовления к удалению закончены ---"
 }
 
+rmf() {
+    rm -f "$@" 2>/dev/null || true
+}
+
 delete_project_files() {
     echo "--- ⚙️ Удаляем файлы проекта ---"
 
