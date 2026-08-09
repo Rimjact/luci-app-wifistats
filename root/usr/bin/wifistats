@@ -1,0 +1,183 @@
+#!/usr/bin/lua
+
+local ubus = require("ubus")
+local json = require("cjson.safe")
+
+local STATE_FILE = "/etc/wifistats/state.json"
+local POLL_INTERVAL = 30
+
+-- Возвращает текущее время
+local function now()
+    return os.time()
+end
+
+-- Возвращает текущую дату в формате Y-m-d
+local function date_string(timestamp)
+    return os.date("%Y-%m-%d", timestamp)
+end
+
+-- Возвращает текущую дату и время в формате Y-m-d H:M:S
+local function datetime_string(timestamp)
+    return os.date("%Y-%m-%d %H:%M:%S", timestamp)
+end
+
+-- Переводит MAC-адрес в нижний регистр и возвращает
+local function normalize_mac(mac)
+    return string.lower(mac or "")
+end
+
+-- Загруждает состояние из файла
+local function load_state()
+    local file = io.open(STATE_FILE, "r")
+    if not file then
+        return nil
+    end
+
+    local content = file:read("*a")
+    file:close()
+
+    return json.decode(content)
+end
+
+-- Сохранаяет состояние в файл
+local function save_state(state)
+    local temporary = STATE_FILE .. ".tmp"
+
+    local file = assert(io.open(temporary, "w"))
+    file:write(json.encode(state))
+    file:close()
+
+    os.rename(temporary, STATE_FILE)
+end
+
+-- Возвращает новое состояние для нового дня
+local function new_state(today)
+    return {
+        date = today,
+        unique_count = 0,
+        total_rx_bytes = 0,
+        total_tx_bytes = 0,
+        devices = {}
+    }
+end
+
+-- Опрашивает hostapd на наличие клиентов и возвращает
+local function get_hostapd_objects(connection)
+    local objects = connection:objects()
+    local result = {}
+
+    for _, object_data in pairs(objects or {}) do
+        if object_data:match("^hostapd%.") then
+            table.insert(result, object_data)
+        end
+    end
+
+    return result
+end
+
+-- Возвращает список клиентов по MAC-адресам
+local function get_connected_clients(connection)
+    local clients = {}
+
+    for _, object_name in ipairs(get_hostapd_objects(connection)) do
+        local response = connection:call(object_name, "get_clients", {})
+
+        if response and response.clients then
+            for mac, client_data in pairs(response.clients) do
+                local normalized_mac = normalize_mac(mac)
+
+                clients[normalized_mac] = {
+                    mac = normalized_mac,
+                    signal = client_data.signal,
+                    rx_bytes = client_data.bytes.rx,
+                    tx_bytes = client_data.bytes.tx
+                }
+            end
+        end
+    end
+
+    return clients
+end
+
+-- Главный процесс сервиса собирающий информацию о клиентах Wi-Fi
+local function process()
+    local timestamp = now()
+    local today = date_string(timestamp)
+    local current_time = datetime_string(timestamp)
+
+    local state = load_state()
+
+    if not state or state.date ~= today then
+        state = new_state(today)
+    end
+
+    local connection = ubus.connect()
+    if not connection then
+        return
+    end
+
+    local clients = get_connected_clients(connection)
+    local changed = false
+
+    for mac, client in pairs(clients) do
+        local device = state.devices[mac]
+
+        if not device then
+            state.devices[mac] = {
+                signal = client.signal,
+                rx_bytes = client.rx_bytes,
+                tx_bytes = client.tx_bytes,
+                first_seen = current_time,
+                last_seen = current_time,
+                last_disconnect = nil,
+                online = true
+            }
+
+            state.unique_count = state.unique_count + 1
+            changed = true
+        else
+            if not device.online then
+                device.last_disconnect = nil
+                changed = true
+            end
+
+            device.online = true
+            device.rx_bytes = client.rx_bytes
+            device.tx_bytes = client.tx_bytes
+            device.signal = client.signal
+            device.last_seen = current_time
+            changed = true
+        end
+    end
+
+    state.total_rx_bytes = 0
+    state.total_tx_bytes = 0
+
+    for mac, device in pairs(state.devices) do
+        if not clients[mac] and device.online then
+            device.online = false
+            device.signal = nil
+            device.last_disconnect = current_time
+            changed = true
+        end
+
+        state.total_rx_bytes = state.total_rx_bytes + device.rx_bytes
+        state.total_tx_bytes = state.total_tx_bytes + device.tx_bytes
+    end
+
+    connection:close()
+
+    if changed then
+        save_state(state)
+    end
+end
+
+while true do
+    local ok, error_message = pcall(process)
+
+    if not ok then
+        io.stderr:write("wifistats: " .. tostring(error_message) .. "\n")
+    end
+
+    os.execute("sleep " .. POLL_INTERVAL)
+end

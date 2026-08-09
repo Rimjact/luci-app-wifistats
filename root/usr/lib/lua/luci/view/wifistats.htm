@@ -1,0 +1,121 @@
+<%+header%>
+
+<h2><%:Статистика Wi-Fi%></h2>
+
+<div class="cbi-section">
+    <h3><%:Общая статистика%></h3>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Дата%></label>
+        <div class="cbi-value-field" id="wifi-stats-date" style="font-size: 18px;">—</div>
+    </div>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Уникальных устройств за день%></label>
+        <div class="cbi-value-field" id="wifi-stats-count" style="color:green; font-size: 18px;">—</div>
+    </div>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Всего отправлено/получено%></label>
+        <div class="cbi-value-field" id="wifi-stats-rx-tx" style="color:yellow; font-size: 18px;">—</div>
+    </div>
+</div>
+<div class="cbi-section">
+    <h3><%:Таблица подключений за сегодня%></h3>
+    <table class="table" id="wifi-stats-table">
+        <thead>
+            <tr class="tr table-titles">
+                <th class="th"><%:MAC-адрес%></th>
+                <th class="th"><%:Состояние%></th>
+		<th class="th"><%:Сигнал%></th>
+		<th class="th"><%:Отправлено/получено%></th>
+                <th class="th"><%:Первое обнаружение%></th>
+                <th class="th"><%:Последнее обнаружение%></th>
+                <th class="th"><%:Последнее отключение%></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+(function() {
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function loadStats() {
+        XHR.get(
+            '<%=luci.dispatcher.build_url("admin", "status", "wifistats", "data")%>',
+            null,
+            function(response) {
+		const roundToTenth = (num) => Math.round(num * 10) / 10;
+
+                if (!response || !response.responseText) {
+                    return;
+                }
+
+                var data;
+
+                try {
+                    data = JSON.parse(response.responseText);
+                } catch (e) {
+                    return;
+                }
+
+                document.getElementById("wifi-stats-date").innerHTML =
+                    (data.date || "—")  +
+		    "<div class=\"cbi-value-description\">" +
+            	    "Текущая дата (год-месяц-день)." +
+        	    "</div>";
+
+                document.getElementById("wifi-stats-count").innerHTML =
+                    (data.unique_count || 0) +
+		    "<div class=\"cbi-value-description\">" +
+            	    "Показывает суммарное количество подключенных уникальных устройств c 00:00 по 23:59 текущего дня." +
+        	    "</div>";
+
+		document.getElementById("wifi-stats-rx-tx").innerHTML =
+                    (roundToTenth(data.total_rx_bytes / 1000000) || 0) + " / " + (roundToTenth(data.total_tx_bytes / 1000000) || 0) + " Мегабайт" +
+		    "<div class=\"cbi-value-description\">" +
+            	    "Показывает суммарное количество Мегабайт переданых по сети за день." +
+        	    "</div>";
+
+
+                var tbody = document.querySelector("#wifi-stats-table tbody");
+                tbody.innerHTML = "";
+
+                Object.keys(data.devices || {})
+                    .sort()
+                    .forEach(function(mac) {
+                        var device = data.devices[mac];
+                        var row = document.createElement("tr");
+			row.classList += "cbi-rowstyle-1";
+
+                        row.innerHTML =
+                            "<td class='td'>" + escapeHtml(mac) + "</td>" +
+                            "<td class='td'>" +
+                            (device.online
+                                ? "<span style=\"color:green\"><%:Подключено%></span>"
+                                : "<span style=\"color:gray\"><%:Отключено%></span>") +
+                            "</td>" +
+                            "<td class='td'>" + escapeHtml(device.signal || "—") + "</td>" +
+                            "<td class='td'>" + escapeHtml(roundToTenth(device.rx_bytes / 1000000) || 0) + " МБ / " + escapeHtml(roundToTenth(device.tx_bytes / 1000000) || 0) + " МБ </td>" +
+                            "<td class='td'>" + escapeHtml(device.first_seen) + "</td>" +
+                            "<td class='td'>" + escapeHtml(device.last_seen) + "</td>" +
+                            "<td class='td'>" + escapeHtml(device.last_disconnect || "—") + "</td>";
+
+                        tbody.appendChild(row);
+                    });
+            }
+        );
+    }
+
+    loadStats();
+    setInterval(loadStats, 30000);
+})();
+</script>
+
+<%+footer%>
