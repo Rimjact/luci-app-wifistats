@@ -1,11 +1,12 @@
 # Wi-Fi Stats
 Simple Wi-Fi statistics app for OpenWrt. Display total devices connects count, traffic usage and devices table by current day.
+
 ---
 ## Featuers
-- Current date;
-- Total unique devices counter by current day;
-- Total RX/TX traffic usage by current day;
-- Table with unique devices connections info: MAC, status, signal, first seen, last seen and last disconnect.
+- current date;
+- total unique devices counter by current day;
+- total RX/TX traffic usage by current day;
+- table with unique devices connections info: MAC, status, signal, first seen, last seen and last disconnect.
 ---
 ## Installation
 Copy and paste commands below to your SSH terminal.
@@ -14,6 +15,8 @@ wget -O /tmp/wifistats-install.sh https://raw.githubusercontent.com/Rimjact/luci
 chmod +x /tmp/wifistats-install.sh
 /tmp/wifistats-install.sh
 ```
+After install go to Status -> Wi-Fi Stats at LuCI.
+
 ## Uninstallation
 Copy and paste commands below to your SSH terminal.
 ```sh
@@ -23,6 +26,6 @@ chmod +x /tmp/wifistats-uninstall.sh
 ```
 ---
 ## To-Do
-- More stats;
-- Install by .ipk packet;
-- Fixes.
+- more stats;
+- install by .ipk packet;
+- fixes.
