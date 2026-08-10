@@ -88,7 +88,7 @@
         	        "</div>";
 
                 document.getElementById("wifi-stats-rx-tx-sum").innerHTML =
-                    (roundToTenth((data.total_tx_bytes + data.total_tx_bytes) / 1000000) || 0) + " Мегабайт" +
+                    (roundToTenth((data.total_tx_bytes + data.total_rx_bytes) / 1000000) || 0) + " Мегабайт" +
 		            "<div class=\"cbi-value-description\">" +
             	    "Показывает суммарный объём данных за день." +
         	        "</div>";
