@@ -16,6 +16,10 @@
         <label class="cbi-value-title"><%:Всего получено/отправлено%></label>
         <div class="cbi-value-field" id="wifi-stats-rx-tx" style="color:yellow; font-size: 18px;">—</div>
     </div>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Всего использовано трафика%></label>
+        <div class="cbi-value-field" id="wifi-stats-rx-tx-sum" style="color:yellow; font-size: 18px;">—</div>
+    </div>
 </div>
 <div class="cbi-section">
     <h3><%:Таблица подключений за сегодня%></h3>
@@ -67,21 +71,27 @@
 
                 document.getElementById("wifi-stats-date").innerHTML =
                     (data.date || "—")  +
-		    "<div class=\"cbi-value-description\">" +
+		            "<div class=\"cbi-value-description\">" +
             	    "Текущая дата (год-месяц-день)." +
-        	    "</div>";
+        	        "</div>";
 
                 document.getElementById("wifi-stats-count").innerHTML =
                     (data.unique_count || 0) +
-		    "<div class=\"cbi-value-description\">" +
+		            "<div class=\"cbi-value-description\">" +
             	    "Показывает суммарное количество подключенных уникальных устройств c 00:00 по 23:59 текущего дня." +
-        	    "</div>";
+        	        "</div>";
 
-		document.getElementById("wifi-stats-rx-tx").innerHTML =
+		        document.getElementById("wifi-stats-rx-tx").innerHTML =
                     (roundToTenth(data.total_tx_bytes / 1000000) || 0) + " / " + (roundToTenth(data.total_rx_bytes / 1000000) || 0) + " Мегабайт" +
-		    "<div class=\"cbi-value-description\">" +
-            	    "Показывает суммарное количество Мегабайт переданых по сети за день." +
-        	    "</div>";
+		            "<div class=\"cbi-value-description\">" +
+            	    "Показывает суммарный объём данных на приём и отправку переданный за день." +
+        	        "</div>";
+
+                document.getElementById("wifi-stats-rx-tx-sum").innerHTML =
+                    (roundToTenth((data.total_tx_bytes + data.total_tx_bytes) / 1000000) || 0) + " Мегабайт" +
+		            "<div class=\"cbi-value-description\">" +
+            	    "Показывает суммарный объём данных за день." +
+        	        "</div>";
 
 
                 var tbody = document.querySelector("#wifi-stats-table tbody");
