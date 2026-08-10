@@ -24,8 +24,8 @@
             <tr class="tr table-titles">
                 <th class="th"><%:MAC-адрес%></th>
                 <th class="th"><%:Состояние%></th>
-		<th class="th"><%:Сигнал%></th>
-		<th class="th"><%:Отправлено/получено%></th>
+		        <th class="th"><%:Сигнал%></th>
+		        <th class="th"><%:Отправлено/получено%></th>
                 <th class="th"><%:Первое обнаружение%></th>
                 <th class="th"><%:Последнее обнаружение%></th>
                 <th class="th"><%:Последнее отключение%></th>
@@ -78,7 +78,7 @@
         	    "</div>";
 
 		document.getElementById("wifi-stats-rx-tx").innerHTML =
-                    (roundToTenth(data.total_rx_bytes / 1000000) || 0) + " / " + (roundToTenth(data.total_tx_bytes / 1000000) || 0) + " Мегабайт" +
+                    (roundToTenth(data.total_tx_bytes / 1000000) || 0) + " / " + (roundToTenth(data.total_rx_bytes / 1000000) || 0) + " Мегабайт" +
 		    "<div class=\"cbi-value-description\">" +
             	    "Показывает суммарное количество Мегабайт переданых по сети за день." +
         	    "</div>";
@@ -102,7 +102,7 @@
                                 : "<span style=\"color:gray\"><%:Отключено%></span>") +
                             "</td>" +
                             "<td class='td'>" + escapeHtml(device.signal || "—") + "</td>" +
-                            "<td class='td'>" + escapeHtml(roundToTenth(device.rx_bytes / 1000000) || 0) + " МБ / " + escapeHtml(roundToTenth(device.tx_bytes / 1000000) || 0) + " МБ </td>" +
+                            "<td class='td'>" + escapeHtml(roundToTenth(device.tx_bytes / 1000000) || 0) + " МБ / " + escapeHtml(roundToTenth(device.rx_bytes / 1000000) || 0) + " МБ </td>" +
                             "<td class='td'>" + escapeHtml(device.first_seen) + "</td>" +
                             "<td class='td'>" + escapeHtml(device.last_seen) + "</td>" +
                             "<td class='td'>" + escapeHtml(device.last_disconnect || "—") + "</td>";
