@@ -30,7 +30,11 @@ end
 local function load_state()
     local file = io.open(STATE_FILE, "r")
     if not file then
-        return nil
+        file = assert(io.open(STATE_FILE, "w"))
+        file:write(json.encode({}))
+        file:close()
+
+        return {}
     end
 
     local content = file:read("*a")
@@ -107,8 +111,18 @@ local function process()
 
     local state = load_state()
 
-    if not state or state.date ~= today then
-        state = new_state(today)
+    if not state.today then
+        state.today = new_state(today)
+    end
+
+    if state.today.date ~= today then
+        state.today.devices = {}
+
+        if state.yesterday then
+            state.two_days_ago = state.yesterday
+        end
+        state.yesterday = state.today
+        state.today = new_state(today)
     end
 
     local connection = ubus.connect()
@@ -120,10 +134,10 @@ local function process()
     local changed = false
 
     for mac, client in pairs(clients) do
-        local device = state.devices[mac]
+        local device = state.today.devices[mac]
 
         if not device then
-            state.devices[mac] = {
+            state.today.devices[mac] = {
                 signal = client.signal,
                 rx_bytes = client.rx_bytes,
                 tx_bytes = client.tx_bytes,
@@ -133,7 +147,7 @@ local function process()
                 online = true
             }
 
-            state.unique_count = state.unique_count + 1
+            state.today.unique_count = state.today.unique_count + 1
             changed = true
         else
             if not device.online then
@@ -150,10 +164,10 @@ local function process()
         end
     end
 
-    state.total_rx_bytes = 0
-    state.total_tx_bytes = 0
+    state.today.total_rx_bytes = 0
+    state.today.total_tx_bytes = 0
 
-    for mac, device in pairs(state.devices) do
+    for mac, device in pairs(state.today.devices) do
         if not clients[mac] and device.online then
             device.online = false
             device.signal = nil
@@ -161,8 +175,8 @@ local function process()
             changed = true
         end
 
-        state.total_rx_bytes = state.total_rx_bytes + device.rx_bytes
-        state.total_tx_bytes = state.total_tx_bytes + device.tx_bytes
+        state.today.total_rx_bytes = state.today.total_rx_bytes + device.rx_bytes
+        state.today.total_tx_bytes = state.today.total_tx_bytes + device.tx_bytes
     end
 
     connection:close()
