@@ -3,9 +3,31 @@ module("luci.controller.wifistats", package.seeall)
 function index()
     entry(
         {"admin", "status", "wifistats"},
-        template("wifistats"),
+        firstchild(),
         _("Статистика Wi-Fi"),
         30
+    ).dependent = false
+
+
+    entry(
+        {"admin", "status", "wifistats", "today"},
+        template("wifistats_today"),
+        _("Сегодня"),
+        1
+    )
+
+    entry(
+        {"admin", "status", "wifistats", "yesterday"},
+        template("wifistats_yesterday"),
+        _("Вчера"),
+        2
+    )
+
+    entry(
+        {"admin", "status", "wifistats", "two_days_ago"},
+        template("wifistats_two_days_ago"),
+        _("Позавчера"),
+        3
     )
 
     entry(

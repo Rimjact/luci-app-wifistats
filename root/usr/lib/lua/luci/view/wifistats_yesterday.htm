@@ -1,0 +1,87 @@
+<%+header%>
+
+<h2><%:Статистика Wi-Fi%></h2>
+
+<div class="cbi-section">
+    <h3><%:Общая статистика за вчера%></h3>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Дата%></label>
+        <div class="cbi-value-field" id="wifi-stats-date" style="font-size: 18px;">—</div>
+    </div>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Уникальных устройств было подключено%></label>
+        <div class="cbi-value-field" id="wifi-stats-count" style="color:green; font-size: 18px;">—</div>
+    </div>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Всего получено/отправлено%></label>
+        <div class="cbi-value-field" id="wifi-stats-rx-tx" style="color:yellow; font-size: 18px;">—</div>
+    </div>
+    <div class="cbi-value">
+        <label class="cbi-value-title"><%:Всего использовано трафика%></label>
+        <div class="cbi-value-field" id="wifi-stats-rx-tx-sum" style="color:yellow; font-size: 18px;">—</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+(function() {
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function loadStats() {
+        XHR.get(
+            '<%=luci.dispatcher.build_url("admin", "status", "wifistats", "data")%>',
+            null,
+            function(response) {
+		        const roundToTenth = (num) => Math.round(num * 10) / 10;
+
+                if (!response || !response.responseText) {
+                    return;
+                }
+
+                var data;
+
+                try {
+                    data = JSON.parse(response.responseText);
+                } catch (e) {
+                    return;
+                }
+
+                document.getElementById("wifi-stats-date").innerHTML =
+                    (data.yesterday.date || "—")  +
+		            "<div class=\"cbi-value-description\">" +
+            	    "Дата вчерашнего дня (год-месяц-день)." +
+        	        "</div>";
+
+                document.getElementById("wifi-stats-count").innerHTML =
+                    (data.yesterday.unique_count || 0) +
+		            "<div class=\"cbi-value-description\">" +
+            	    "Показывает суммарное количество подключенных уникальных устройств c 00:00 по 23:59 вчера." +
+        	        "</div>";
+
+		        document.getElementById("wifi-stats-rx-tx").innerHTML =
+                    (roundToTenth(data.yesterday.total_tx_bytes / 1000000) || 0) + " / " + (roundToTenth(data.yesterday.total_rx_bytes / 1000000) || 0) + " Мегабайт" +
+		            "<div class=\"cbi-value-description\">" +
+            	    "Показывает суммарный объём данных на приём и отправку переданный за вчерашний день." +
+        	        "</div>";
+
+                document.getElementById("wifi-stats-rx-tx-sum").innerHTML =
+                    (roundToTenth((data.yesterday.total_tx_bytes + data.yesterday.total_rx_bytes) / 1000000) || 0) + " Мегабайт" +
+		            "<div class=\"cbi-value-description\">" +
+            	    "Показывает суммарный объём данных за вчерашний день." +
+        	        "</div>";
+            }
+        );
+    }
+
+    loadStats();
+    setInterval(loadStats, 30000);
+})();
+</script>
+
+<%+footer%>

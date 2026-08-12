@@ -3,7 +3,7 @@
 <h2><%:Статистика Wi-Fi%></h2>
 
 <div class="cbi-section">
-    <h3><%:Общая статистика%></h3>
+    <h3><%:Общая статистика за сегодня%></h3>
     <div class="cbi-value">
         <label class="cbi-value-title"><%:Дата%></label>
         <div class="cbi-value-field" id="wifi-stats-date" style="font-size: 18px;">—</div>
@@ -70,25 +70,25 @@
                 }
 
                 document.getElementById("wifi-stats-date").innerHTML =
-                    (data.date || "—")  +
+                    (data.today.date || "—")  +
 		            "<div class=\"cbi-value-description\">" +
             	    "Текущая дата (год-месяц-день)." +
         	        "</div>";
 
                 document.getElementById("wifi-stats-count").innerHTML =
-                    (data.unique_count || 0) +
+                    (data.today.unique_count || 0) +
 		            "<div class=\"cbi-value-description\">" +
             	    "Показывает суммарное количество подключенных уникальных устройств c 00:00 по 23:59 текущего дня." +
         	        "</div>";
 
 		        document.getElementById("wifi-stats-rx-tx").innerHTML =
-                    (roundToTenth(data.total_tx_bytes / 1000000) || 0) + " / " + (roundToTenth(data.total_rx_bytes / 1000000) || 0) + " Мегабайт" +
+                    (roundToTenth(data.today.total_tx_bytes / 1000000) || 0) + " / " + (roundToTenth(data.today.total_rx_bytes / 1000000) || 0) + " Мегабайт" +
 		            "<div class=\"cbi-value-description\">" +
             	    "Показывает суммарный объём данных на приём и отправку переданный за день." +
         	        "</div>";
 
                 document.getElementById("wifi-stats-rx-tx-sum").innerHTML =
-                    (roundToTenth((data.total_tx_bytes + data.total_rx_bytes) / 1000000) || 0) + " Мегабайт" +
+                    (roundToTenth((data.today.total_tx_bytes + data.today.total_rx_bytes) / 1000000) || 0) + " Мегабайт" +
 		            "<div class=\"cbi-value-description\">" +
             	    "Показывает суммарный объём данных за день." +
         	        "</div>";
@@ -97,10 +97,10 @@
                 var tbody = document.querySelector("#wifi-stats-table tbody");
                 tbody.innerHTML = "";
 
-                Object.keys(data.devices || {})
+                Object.keys(data.today.devices || {})
                     .sort()
                     .forEach(function(mac) {
-                        var device = data.devices[mac];
+                        var device = data.today.devices[mac];
                         var row = document.createElement("tr");
 			row.classList += "cbi-rowstyle-1";
 
