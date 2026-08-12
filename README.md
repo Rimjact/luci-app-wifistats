@@ -13,7 +13,7 @@ Simple Wi-Fi statistics app for OpenWrt. Display total devices connects count, t
 - 3 страницы - сегодня, вчера и позавчера;
 - общее количество уникальных устройств за последние три дня;
 - общее количество TX/RX трафика за последние три дня;
-- таблица с уникальными устройствами за сегодня
+- таблица с уникальными устройствами за сегодня: MAC, статус, сигнал, первое обнаружение, последние обнаружение и последнее отключение.
 ---
 ## Installation (Установка)
 Copy and paste commands below to your SSH terminal and press Enter.
