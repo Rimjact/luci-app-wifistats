@@ -21,7 +21,9 @@ delete_project_files() {
     rmf /etc/init.d/wifistats \
         /usr/bin/wifistats \
         /usr/lib/lua/luci/controller/wifistats.lua \
-        /usr/lib/lua/luci/view/wifistats.htm
+        /usr/lib/lua/luci/view/wifistats_today.htm \
+        /usr/lib/lua/luci/view/wifistats_yesterday.htm \
+        /usr/lib/lua/luci/view/wifistats_two_days_ago.htm
 
     echo "--- ✅ Файлы проекта удалены ---"
 }
