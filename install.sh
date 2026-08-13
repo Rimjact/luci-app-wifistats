@@ -20,10 +20,10 @@ create_directories() {
     mkdir -p /etc/init.d/
     echo "/usr/bin"
     mkdir -p /usr/bin/
-    echo "usr/lib/lua/luci/controller"
-    mkdir -p usr/lib/lua/luci/controller/
-    echo "usr/lib/lua/luci/view"
-    mkdir -p usr/lib/lua/luci/view/
+    echo "/usr/lib/lua/luci/controller"
+    mkdir -p /usr/lib/lua/luci/controller/
+    echo "/usr/lib/lua/luci/view"
+    mkdir -p /usr/lib/lua/luci/view/
 
     echo "/etc/wifistats"
     touch /etc/wifistats/
