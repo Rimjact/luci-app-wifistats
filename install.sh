@@ -26,7 +26,7 @@ create_directories() {
     mkdir -p /usr/lib/lua/luci/view/
 
     echo "/etc/wifistats"
-    touch /etc/wifistats/
+    mkdir -p /etc/wifistats/
 
     echo "--- ✅ Директории созданы ---"
 }
