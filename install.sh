@@ -5,10 +5,10 @@ BRANCH="main"
 
 install_depends() {
     echo "--- 🔃 Устанавливаем зависимости ---"
-    echo "Зависимости: luci-base lua lua-cjson libubus-lua procd"
+    echo "Зависимости: luci-base lua lua-cjson luci-lua-runtime libubus-lua liblucihttp-lua procd"
 
     apk update
-    apk add luci-base lua lua-cjson libubus-lua procd
+    apk add luci-base lua lua-cjson luci-lua-runtime libubus-lua liblucihttp-lua procd
 
     echo "--- ✅ Зависимости установлены ---"
 }
@@ -24,7 +24,6 @@ create_directories() {
     mkdir -p /usr/lib/lua/luci/controller/
     echo "/usr/lib/lua/luci/view"
     mkdir -p /usr/lib/lua/luci/view/
-
     echo "/etc/wifistats"
     mkdir -p /etc/wifistats/
 
