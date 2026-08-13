@@ -19,14 +19,14 @@ create_directories() {
     echo "/etc/init.d/"
     mkdir -p /etc/init.d/
     echo "/usr/bin"
-    mkdir -p /usr/bin
-    echo "/lib/lua/luci/controller"
-    mkdir -p /lib/lua/luci/controller
-    echo "/lib/lua/luci/view"
-    mkdir -p /lib/lua/luci/view
+    mkdir -p /usr/bin/
+    echo "usr/lib/lua/luci/controller"
+    mkdir -p usr/lib/lua/luci/controller/
+    echo "usr/lib/lua/luci/view"
+    mkdir -p usr/lib/lua/luci/view/
 
     echo "/etc/wifistats"
-    touch /etc/wifistats
+    touch /etc/wifistats/
 
     echo "--- ✅ Директории созданы ---"
 }
