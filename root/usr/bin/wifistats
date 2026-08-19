@@ -21,6 +21,11 @@ local function datetime_string(timestamp)
     return os.date("%Y-%m-%d %H:%M:%S", timestamp)
 end
 
+-- Возвращает текущее время в формате H:M:S
+local function time_string(timestamp)
+    return os.date("%H:%M:%S", timestamp)
+end
+
 -- Переводит MAC-адрес в нижний регистр и возвращает
 local function normalize_mac(mac)
     return string.lower(mac or "")
@@ -107,7 +112,7 @@ end
 local function process()
     local timestamp = now()
     local today = date_string(timestamp)
-    local current_time = datetime_string(timestamp)
+    local current_time = time_string(timestamp)
 
     local state = load_state()
 
