@@ -76,7 +76,7 @@ local function get_hostapd_objects(connection)
     local result = {}
 
     for _, object_data in pairs(objects or {}) do
-        if object_data:match("^hostapd%.") then
+        if object_data:match("hostapd.phy0-ap1") then
             table.insert(result, object_data)
         end
     end
