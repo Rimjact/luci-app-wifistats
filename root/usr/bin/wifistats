@@ -70,38 +70,22 @@ local function new_state(today)
     }
 end
 
--- Опрашивает hostapd на наличие клиентов и возвращает
-local function get_hostapd_objects(connection)
-    local objects = connection:objects()
-    local result = {}
-
-    for _, object_data in pairs(objects or {}) do
-        if object_data:match("hostapd.phy0-ap1") then
-            table.insert(result, object_data)
-        end
-    end
-
-    return result
-end
-
 -- Возвращает список клиентов по MAC-адресам
 local function get_connected_clients(connection)
     local clients = {}
 
-    for _, object_name in ipairs(get_hostapd_objects(connection)) do
-        local response = connection:call(object_name, "get_clients", {})
+    local response = connection:call("hostapd.phy0-ap1", "get_clients", {})
 
-        if response and response.clients then
-            for mac, client_data in pairs(response.clients) do
-                local normalized_mac = normalize_mac(mac)
+    if response and response.clients then
+        for mac, client_data in pairs(response.clients) do
+            local normalized_mac = normalize_mac(mac)
 
-                clients[normalized_mac] = {
-                    mac = normalized_mac,
-                    signal = client_data.signal,
-                    rx_bytes = client_data.bytes.rx,
-                    tx_bytes = client_data.bytes.tx
-                }
-            end
+            clients[normalized_mac] = {
+                mac = normalized_mac,
+                signal = client_data.signal,
+                rx_bytes = client_data.bytes.rx,
+                tx_bytes = client_data.bytes.tx
+            }
         end
     end
 
